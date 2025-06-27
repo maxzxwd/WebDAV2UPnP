@@ -1,0 +1,11 @@
+[Unit]
+Description=WebDAV to UPnP proxy on 57416 port
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/WebDAV2UPnP
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

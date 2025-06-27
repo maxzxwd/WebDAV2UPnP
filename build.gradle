@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.graalvm.buildtools.native' version '0.10.6'
+}
+
+application {
+    mainClass = 'com.maxzxwd.Main'
+}
+
+group = 'com.maxzxwd'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('io.projectreactor:reactor-core:3.8.0-M4')
+    implementation('org.slf4j:slf4j-simple:2.0.17')
+    implementation('io.javalin:javalin:6.7.0')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+}
+
+graalvmNative {
+    toolchainDetection = true
+
+    binaries {
+        main {
+            fallback = false
+            buildArgs.add('--gc=G1')
+            buildArgs.add('-R:MaxHeapSize=128m')
+
+            def profileFile = rootProject.file('default.iprof')
+
+            if (profileFile.exists()) {
+                buildArgs.add("--pgo=${profileFile.path}")
+            } else {
+                //buildArgs.add('--pgo-instrument')
+            }
+        }
+    }
+}
